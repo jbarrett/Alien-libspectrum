@@ -1,0 +1,32 @@
+use alienfile;
+
+my $LIBSPECTRUM_MIN_VERSION = '1.5';
+my $LIBSPECTRUM_MAJOR_VERSION = 1;
+my $WIN = $^O eq 'MSWin32';
+
+plugin 'Gather::IsolateDynamic';
+plugin 'PkgConfig' => (
+    pkg_name => 'rtmidi',
+    atleast_version => $LIBSPECTRUM_MIN_VERSION
+);
+
+share {
+    start_url 'https://fuse-emulator.sourceforge.net/libspectrum.php';
+    plugin 'Download' => (
+        filter => qr/^libspectrum-${LIBSPECTRUM_MAJOR_VERSION}.*\.tar\.gz$/,
+        version => qr/([0-9\.]+)/,
+    );
+    plugin 'Extract' => 'tar.gz';
+
+#plugin $WIN
+#        ? 'Build::CMake'
+#        : 'Build::Autoconf';
+    plugin 'Build::Autoconf';
+
+#    build $WIN
+#        ? [ [ '%{cmake3}', @{ meta->prop->{plugin_build_cmake}->{args} }, '-S', '.', '-B', 'build' ], '%{cmake3} --build build', '%{cmake3} --install build' ]
+#        : [ '%{configure} --enable-static', '%{make}', '%{make} install' ];
+
+    build [ '%{configure}', '%{make}', '%{make} install', ];
+
+};
