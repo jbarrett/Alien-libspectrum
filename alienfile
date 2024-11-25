@@ -10,6 +10,9 @@ plugin 'PkgConfig' => (
     atleast_version => $LIBSPECTRUM_MIN_VERSION
 );
 
+my $config = ' ';
+$config .= '--with-fake-glib' if $ENV{ALIEN_LIBSPECTRUM_USE_FAKE_GLIB} // $^O eq 'MSWin32';
+
 share {
     # TODO: Pull latest version
     start_url 'https://sourceforge.net/projects/fuse-emulator/files/libspectrum/1.5.0/libspectrum-1.5.0.tar.gz';
@@ -22,5 +25,5 @@ share {
 
     plugin 'Build::Autoconf';
 
-    build [ '%{configure}', '%{make}', '%{make} install', ];
+    build [ '%{configure}' . $config, '%{make}', '%{make} install', ];
 };
